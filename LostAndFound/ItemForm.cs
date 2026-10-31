@@ -4,10 +4,11 @@ namespace LostAndFound;
 
 public class ItemForm : Form
 {
+    // One column: each label sits directly above its input, so nothing can misalign.
     private readonly TableLayoutPanel _layout = new()
     {
         Dock = DockStyle.Fill,
-        ColumnCount = 2,
+        ColumnCount = 1,
         AutoScroll = true,
         Padding = new Padding(12)
     };
@@ -21,7 +22,7 @@ public class ItemForm : Form
     private readonly TextBox _contactName = new();
     private readonly TextBox _contactInfo = new();
     private readonly ComboBox _status = new() { DropDownStyle = ComboBoxStyle.DropDownList };
-    private readonly TextBox _notes = new() { Multiline = true, Height = 60, ScrollBars = ScrollBars.Vertical };
+    private readonly TextBox _notes = new() { Multiline = true, Height = 80, ScrollBars = ScrollBars.Vertical };
 
     public Item Item { get; }
 
@@ -30,35 +31,32 @@ public class ItemForm : Form
         Item = existing ?? new Item();
         Text = existing == null ? "Add Item" : "Edit Item";
 
-        // Scale the window with the display's DPI so the last fields (Notes) and
-        // the Save button are not pushed off the bottom on laptops using 125%/150% scaling.
         AutoScaleDimensions = new SizeF(96F, 96F);
         AutoScaleMode = AutoScaleMode.Dpi;
 
-        ClientSize = new Size(480, 680);
-        MinimumSize = new Size(420, 560);
+        ClientSize = new Size(480, 700);
+        MinimumSize = new Size(420, 520);
         FormBorderStyle = FormBorderStyle.Sizable;
         MaximizeBox = true;
         MinimizeBox = false;
         StartPosition = FormStartPosition.CenterParent;
 
-        _layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110));
         _layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
 
         _type.Items.AddRange(Enum.GetNames<ItemType>());
         _category.Items.AddRange(Item.Categories);
         _status.Items.AddRange(Enum.GetNames<ItemStatus>());
 
-        AddRow("Type", _type);
-        AddRow("Item name *", _name);
-        AddRow("Category", _category);
-        AddRow("Description", _description);
-        AddRow("Location", _location);
-        AddRow("Date", _date);
-        AddRow("Contact name", _contactName);
-        AddRow("Contact info", _contactInfo);
-        AddRow("Status", _status);
-        AddRow("Notes", _notes);
+        AddField("Type", _type);
+        AddField("Item name *", _name);
+        AddField("Category", _category);
+        AddField("Description", _description);
+        AddField("Location", _location);
+        AddField("Date", _date);
+        AddField("Contact name", _contactName);
+        AddField("Contact info", _contactInfo);
+        AddField("Status", _status);
+        AddField("Notes", _notes);
 
         var ok = new Button { Text = "Save", Width = 90, Height = 30 };
         var cancel = new Button { Text = "Cancel", Width = 90, Height = 30, DialogResult = DialogResult.Cancel };
@@ -83,21 +81,23 @@ public class ItemForm : Form
         LoadFromItem();
     }
 
-    private void AddRow(string label, Control input)
+    /// <summary>Adds a label row followed by an input row.</summary>
+    private void AddField(string label, Control input)
     {
-        input.Dock = DockStyle.Top;
-        input.Margin = new Padding(3, 3, 3, 8);
         var lbl = new Label
         {
             Text = label,
             AutoSize = true,
-            Anchor = AnchorStyles.Left,
-            Margin = new Padding(3, 7, 3, 8)
+            Anchor = AnchorStyles.Top | AnchorStyles.Left,
+            Margin = new Padding(3, 6, 3, 2)
         };
-        int row = _layout.RowCount++;
+        input.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        input.Margin = new Padding(3, 0, 3, 6);
+
         _layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-        _layout.Controls.Add(lbl, 0, row);
-        _layout.Controls.Add(input, 1, row);
+        _layout.Controls.Add(lbl, 0, _layout.RowCount++);
+        _layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        _layout.Controls.Add(input, 0, _layout.RowCount++);
     }
 
     private void LoadFromItem()
