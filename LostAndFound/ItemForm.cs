@@ -29,9 +29,16 @@ public class ItemForm : Form
     {
         Item = existing ?? new Item();
         Text = existing == null ? "Add Item" : "Edit Item";
-        ClientSize = new Size(460, 600);
-        FormBorderStyle = FormBorderStyle.FixedDialog;
-        MaximizeBox = false;
+
+        // Scale the window with the display's DPI so the last fields (Notes) and
+        // the Save button are not pushed off the bottom on laptops using 125%/150% scaling.
+        AutoScaleDimensions = new SizeF(96F, 96F);
+        AutoScaleMode = AutoScaleMode.Dpi;
+
+        ClientSize = new Size(480, 680);
+        MinimumSize = new Size(420, 560);
+        FormBorderStyle = FormBorderStyle.Sizable;
+        MaximizeBox = true;
         MinimizeBox = false;
         StartPosition = FormStartPosition.CenterParent;
 
