@@ -17,6 +17,8 @@ public class MainForm : Form
     public MainForm()
     {
         Text = "Lost & Found Management";
+        AutoScaleDimensions = new SizeF(96F, 96F);
+        AutoScaleMode = AutoScaleMode.Dpi;
         ClientSize = new Size(1000, 600);
         MinimumSize = new Size(760, 400);
         StartPosition = FormStartPosition.CenterScreen;
